@@ -9,30 +9,30 @@ import { hashPassword, verifyPassword } from 'src/auth/utils/password';
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService
-  ) { }
+    private readonly jwtService: JwtService,
+  ) {}
 
   async register(registerUserDto: RegisterUserDto) {
-    registerUserDto.password = await hashPassword(registerUserDto.password)
+    registerUserDto.password = await hashPassword(registerUserDto.password);
     const newUser = await this.usersService.createUser(registerUserDto);
-    delete newUser.password
-    return newUser
+    delete newUser.password;
+    return newUser;
   }
 
   async login(loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;
     const user = await this.usersService.findByEmail(email);
-    const isPasswordMatch = await verifyPassword(password, user.password)
+    const isPasswordMatch = await verifyPassword(password, user.password);
     if (!isPasswordMatch) {
       throw new UnauthorizedException();
     }
 
     {
-      const { id, username, email } = user
+      const { id, username, email } = user;
       const payload = { id, username, email };
       return {
-        access_token: await this.jwtService.signAsync(payload)
-      }
+        access_token: await this.jwtService.signAsync(payload),
+      };
     }
   }
 }
