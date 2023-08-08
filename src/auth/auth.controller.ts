@@ -5,12 +5,12 @@ import {
   Post,
   HttpStatus,
   Get,
-  Request,
 } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user-dto';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user-dto';
 import { Public } from './auth.guard';
+import { RequestUser, User } from './utils/user-decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -23,14 +23,14 @@ export class AuthController {
     return this.authService.register(registerUserDto);
   }
 
+  @Public()
   @Post()
-  login(@Body() loginUserDto: LoginUserDto) {
-    return this.authService.login(loginUserDto);
+  async login(@Body() loginUserDto: LoginUserDto) {
+    return await this.authService.login(loginUserDto);
   }
 
-  @Public()
   @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  getProfile(@User() user: RequestUser) {
+    return user;
   }
 }
