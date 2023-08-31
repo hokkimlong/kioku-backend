@@ -6,24 +6,52 @@ import { Role } from '@prisma/client';
 
 @Injectable()
 export class ActivityService {
-
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   createActivity(userId: number, createActivityDto: CreateActivityDto) {
+    const { startDate, endDate, image, name } = createActivityDto;
     return this.prisma.activity.create({
-      data: { ...createActivityDto, users: { create: [{ userId, role: Role.ADMIN }] } }
-    }
-    )
+      data: {
+        name,
+        image,
+        startDate,
+        endDate,
+        users: {
+          createMany: {
+            data: [
+              {
+                userId,
+                role: Role.ADMIN,
+              },
+              ...createActivityDto.members.map((member) => ({
+                userId: member.id,
+                role: Role.USER,
+              })),
+            ],
+          },
+        },
+      },
+    });
   }
 
-  getActivitiesByUserId(userId: number) {
+  async getActivitiesByUserId(userId: number) {
     return this.prisma.activity.findMany({
-      where: { users: { every: { userId } } }, include: {
+      where: {
+        users: {
+          some: {
+            userId: userId,
+          },
+        },
+      },
+      include: {
         _count: {
-          select: { users: true, informations: true, posts: true }
-        }
-      }
-    })
+          select: { users: true, informations: true, posts: true },
+        },
+      },
+      orderBy: {
+        startDate: 'desc',
+      },
+    });
   }
 
   findOne(id: number) {

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,11 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  ADMIN
-  USER
-}
-
 model User {
   id           Int             @id @default(autoincrement())
   username     String          @unique
@@ -22,30 +14,32 @@ model User {
   password     String
   createdAt    DateTime        @default(now())
   activities   ActivityUsers[]
-  informations Information[]
   groupChats   GroupChat[]
+  informations Information[]
   posts        Post[]
-  PostLike     PostLike[]
   PostComment  PostComment[]
+  PostLike     PostLike[]
 }
 
 model Activity {
   id           Int             @id @default(autoincrement())
   name         String
-  background   String
+  image        String
+  startDate    DateTime        @default(now())
+  endDate      DateTime        @default(now())
   createdAt    DateTime        @default(now())
   users        ActivityUsers[]
-  informations Information[]
   groupChats   GroupChat[]
+  informations Information[]
   posts        Post[]
 }
 
 model ActivityUsers {
-  user       User     @relation(fields: [userId], references: [id])
   userId     Int
-  activity   Activity @relation(fields: [activityId], references: [id])
   activityId Int
   role       Role     @default(USER)
+  activity   Activity @relation(fields: [activityId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 
   @@id([userId, activityId])
 }
@@ -55,66 +49,71 @@ model Information {
   title       String
   description String
   background  String
-  activity    Activity           @relation(fields: [activityId], references: [id])
   activityId  Int
-  user        User               @relation(fields: [userId], references: [id])
   userId      Int
   createdAt   DateTime           @default(now())
+  activity    Activity           @relation(fields: [activityId], references: [id])
+  user        User               @relation(fields: [userId], references: [id])
   images      InformationImage[]
 }
 
 model InformationImage {
   id            Int         @id @default(autoincrement())
-  information   Information @relation(fields: [informationId], references: [id])
   informationId Int
   image         String
+  information   Information @relation(fields: [informationId], references: [id])
 }
 
 model GroupChat {
   id         Int      @id @default(autoincrement())
-  activity   Activity @relation(fields: [activityId], references: [id])
   activityId Int
-  user       User     @relation(fields: [userId], references: [id])
   userId     Int
   message    String
   isSeen     Boolean
   createdAt  DateTime @default(now())
+  activity   Activity @relation(fields: [activityId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
 }
 
 model Post {
   id           Int           @id @default(autoincrement())
-  activity     Activity      @relation(fields: [activityId], references: [id])
   activityId   Int
-  user         User          @relation(fields: [userId], references: [id])
   userId       Int
   description  String
   createdAt    DateTime      @default(now())
+  activity     Activity      @relation(fields: [activityId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
+  postComments PostComment[]
   postImages   PostImage[]
   postLikes    PostLike[]
-  postComments PostComment[]
 }
 
 model PostImage {
   id     Int  @id @default(autoincrement())
-  post   Post @relation(fields: [postId], references: [id])
   postId Int
+  post   Post @relation(fields: [postId], references: [id])
 }
 
 model PostLike {
   id        Int      @id @default(autoincrement())
-  post      Post     @relation(fields: [postId], references: [id])
   postId    Int
-  user      User     @relation(fields: [userId], references: [id])
   userId    Int
   createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model PostComment {
   id        Int      @id @default(autoincrement())
-  post      Post     @relation(fields: [postId], references: [id])
   postId    Int
-  user      User     @relation(fields: [userId], references: [id])
   userId    Int
   message   String
   createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  USER
 }
