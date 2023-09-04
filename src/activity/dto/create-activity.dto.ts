@@ -1,11 +1,4 @@
-import {
-  IsArray,
-  IsDate,
-  IsDateString,
-  IsNotEmpty,
-  IsString,
-  MinLength,
-} from 'class-validator';
+import { IsArray, IsDateString, IsString, MinLength } from 'class-validator';
 
 export class CreateActivityDto {
   @MinLength(3)

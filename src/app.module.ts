@@ -10,6 +10,7 @@ import { jwtConstants } from './auth/constants';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AuthGuard } from './auth/auth.guard';
         expiresIn: '6000s',
       },
     }),
+    PostModule,
   ],
   controllers: [AppController],
   providers: [
