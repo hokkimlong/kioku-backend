@@ -6,15 +6,20 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ActivityService } from './activity.service';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { User, RequestUser } from 'src/auth/utils/user-decorator';
+import { PostService } from 'src/post/post.service';
 
 @Controller('activity')
 export class ActivityController {
-  constructor(private readonly activityService: ActivityService) {}
+  constructor(
+    private readonly activityService: ActivityService,
+    private readonly postService: PostService,
+  ) {}
 
   @Post()
   create(
@@ -32,6 +37,11 @@ export class ActivityController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.activityService.findOne(+id);
+  }
+
+  @Get(':id/post')
+  getActivityPosts(@Param('id', ParseIntPipe) activityId: number) {
+    return this.postService.getPostsByActivityId(activityId);
   }
 
   @Patch(':id')
