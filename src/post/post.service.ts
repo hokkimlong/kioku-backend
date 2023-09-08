@@ -47,5 +47,25 @@ export class PostService {
     });
   }
 
-  createPostLike() {}
+  async likePost(userId: number, postId: number) {
+    const userLikePost = await this.prisma.postLike.findFirst({
+      where: {
+        postId,
+        userId,
+      },
+    });
+
+    if (userLikePost) {
+      return this.prisma.postLike.delete({
+        where: { id: userLikePost.id },
+      });
+    } else {
+      return this.prisma.postLike.create({
+        data: {
+          postId,
+          userId,
+        },
+      });
+    }
+  }
 }
