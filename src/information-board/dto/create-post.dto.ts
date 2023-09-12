@@ -1,6 +1,7 @@
 import { IsArray, IsNumber, IsString } from 'class-validator';
+import { Image } from 'src/post/dto/create-post.dto';
 
-export class CreatePostDto {
+export class CreateInformationBoardDto {
   @IsNumber()
   activityId: number;
 
@@ -8,9 +9,8 @@ export class CreatePostDto {
   images: Image[];
 
   @IsString()
-  description: string;
-}
+  title: string;
 
-export class Image {
-  uri: string;
+  @IsString()
+  description: string;
 }

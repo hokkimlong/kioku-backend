@@ -48,7 +48,6 @@ model Information {
   id          Int                @id @default(autoincrement())
   title       String
   description String
-  background  String
   activityId  Int
   userId      Int
   createdAt   DateTime           @default(now())
@@ -60,7 +59,7 @@ model Information {
 model InformationImage {
   id            Int         @id @default(autoincrement())
   informationId Int
-  image         String
+  uri           String
   information   Information @relation(fields: [informationId], references: [id])
 }
 
