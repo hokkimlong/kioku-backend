@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { CreatePostCommentDto } from './dto/create-post-comment.dto';
 
 @Injectable()
 export class PostService {
@@ -67,5 +68,25 @@ export class PostService {
         },
       });
     }
+  }
+
+  async createComment(
+    userId: number,
+    createPostCommentDto: CreatePostCommentDto,
+  ) {
+    return this.prisma.postComment.create({
+      data: {
+        ...createPostCommentDto,
+        userId,
+      },
+    });
+  }
+
+  async deleteComment(commentId: number) {
+    return this.prisma.postComment.delete({
+      where: {
+        id: commentId,
+      },
+    });
   }
 }

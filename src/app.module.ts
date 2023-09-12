@@ -11,6 +11,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
 import { PostModule } from './post/post.module';
+import { InformationBoardModule } from './information-board/information-board.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { PostModule } from './post/post.module';
       },
     }),
     PostModule,
+    InformationBoardModule,
   ],
   controllers: [AppController],
   providers: [

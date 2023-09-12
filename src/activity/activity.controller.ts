@@ -56,4 +56,9 @@ export class ActivityController {
   remove(@Param('id') id: string) {
     return this.activityService.remove(+id);
   }
+
+  @Get(':id/post')
+  getActivityInformations(@Param('id', ParseIntPipe) activityId: number) {
+    return;
+  }
 }
