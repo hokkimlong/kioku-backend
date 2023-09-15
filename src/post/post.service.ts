@@ -70,6 +70,12 @@ export class PostService {
     }
   }
 
+  async getComments(postId: number) {
+    return this.prisma.postComment.findMany({
+      where: { postId },
+    });
+  }
+
   async createComment(
     userId: number,
     createPostCommentDto: CreatePostCommentDto,
