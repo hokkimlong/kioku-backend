@@ -13,12 +13,14 @@ import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { User, RequestUser } from 'src/auth/utils/user-decorator';
 import { PostService } from 'src/post/post.service';
+import { InformationBoardService } from 'src/information-board/information-board.service';
 
 @Controller('activity')
 export class ActivityController {
   constructor(
     private readonly activityService: ActivityService,
     private readonly postService: PostService,
+    private readonly informationService: InformationBoardService,
   ) {}
 
   @Post()
@@ -34,14 +36,20 @@ export class ActivityController {
     return this.activityService.getActivitiesByUserId(+user.id);
   }
 
+  @Get(':id/post')
+  getActivityPosts(@Param('id', ParseIntPipe) activityId: number) {
+    console.log('run');
+    return this.postService.getPostsByActivityId(activityId);
+  }
+
+  @Get(':id/information')
+  getActivityInformations(@Param('id', ParseIntPipe) activityId: number) {
+    return this.informationService.getInformationBoardByActivityId(activityId);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.activityService.findOne(+id);
-  }
-
-  @Get(':id/post')
-  getActivityPosts(@Param('id', ParseIntPipe) activityId: number) {
-    return this.postService.getPostsByActivityId(activityId);
   }
 
   @Patch(':id')
@@ -55,10 +63,5 @@ export class ActivityController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.activityService.remove(+id);
-  }
-
-  @Get(':id/post')
-  getActivityInformations(@Param('id', ParseIntPipe) activityId: number) {
-    return;
   }
 }
