@@ -12,6 +12,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
 import { PostModule } from './post/post.module';
 import { InformationBoardModule } from './information-board/information-board.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { InformationBoardModule } from './information-board/information-board.mo
     }),
     PostModule,
     InformationBoardModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [
