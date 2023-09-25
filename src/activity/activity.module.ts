@@ -4,6 +4,7 @@ import { ActivityController } from './activity.controller';
 import { PrismaService } from 'src/prisma.service';
 import { PostService } from 'src/post/post.service';
 import { InformationBoardService } from 'src/information-board/information-board.service';
+import { ChatService } from 'src/chat/chat.service';
 
 @Module({
   controllers: [ActivityController],
@@ -12,6 +13,7 @@ import { InformationBoardService } from 'src/information-board/information-board
     PrismaService,
     PostService,
     InformationBoardService,
+    ChatService,
   ],
 })
 export class ActivityModule {}
