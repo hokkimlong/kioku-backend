@@ -14,6 +14,7 @@ import { UpdateActivityDto } from './dto/update-activity.dto';
 import { User, RequestUser } from 'src/auth/utils/user-decorator';
 import { PostService } from 'src/post/post.service';
 import { InformationBoardService } from 'src/information-board/information-board.service';
+import { ChatService } from 'src/chat/chat.service';
 
 @Controller('activity')
 export class ActivityController {
@@ -21,6 +22,7 @@ export class ActivityController {
     private readonly activityService: ActivityService,
     private readonly postService: PostService,
     private readonly informationService: InformationBoardService,
+    private readonly chatService: ChatService,
   ) {}
 
   @Post()
@@ -44,6 +46,11 @@ export class ActivityController {
   @Get(':id/information')
   getActivityInformations(@Param('id', ParseIntPipe) activityId: number) {
     return this.informationService.getInformationBoardByActivityId(activityId);
+  }
+
+  @Get(':id/chat')
+  getActivityChats(@Param('id', ParseIntPipe) activityId: number) {
+    return this.chatService.getChatByActivityId(activityId);
   }
 
   @Get(':id')

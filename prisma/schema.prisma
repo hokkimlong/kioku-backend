@@ -68,7 +68,6 @@ model GroupChat {
   activityId Int
   userId     Int
   message    String
-  isSeen     Boolean
   createdAt  DateTime @default(now())
   activity   Activity @relation(fields: [activityId], references: [id])
   user       User     @relation(fields: [userId], references: [id])
