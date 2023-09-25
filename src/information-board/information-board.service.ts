@@ -27,6 +27,27 @@ export class InformationBoardService {
       where: {
         activityId,
       },
+      include: {
+        _count: {
+          select: {
+            images: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  getInformationBoardById(id: number) {
+    return this.prisma.information.findFirst({
+      where: {
+        id,
+      },
+      include: {
+        images: true,
+      },
     });
   }
 }
