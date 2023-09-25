@@ -38,7 +38,6 @@ export class ActivityController {
 
   @Get(':id/post')
   getActivityPosts(@Param('id', ParseIntPipe) activityId: number) {
-    console.log('run');
     return this.postService.getPostsByActivityId(activityId);
   }
 
