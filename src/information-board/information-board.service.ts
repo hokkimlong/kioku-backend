@@ -50,4 +50,8 @@ export class InformationBoardService {
       },
     });
   }
+
+  deleteInformationBoardById(id: number) {
+    return this.prisma.information.delete({ where: { id } });
+  }
 }

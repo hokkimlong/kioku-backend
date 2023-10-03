@@ -46,4 +46,9 @@ export class PostController {
   deletePostComment(@Param('id', ParseIntPipe) commentId) {
     return this.postService.deleteComment(commentId);
   }
+
+  @Delete(':id')
+  deletePost(@Param('id', ParseIntPipe) postId) {
+    return this.postService.deletePost(postId);
+  }
 }
