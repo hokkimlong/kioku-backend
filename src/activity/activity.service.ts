@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { PrismaService } from 'src/prisma.service';
-import { Role } from '@prisma/client';
+import { Prisma, Role } from '@prisma/client';
 
 @Injectable()
 export class ActivityService {
@@ -55,14 +55,23 @@ export class ActivityService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} activity`;
+    return this.prisma.activity.findUniqueOrThrow({
+      where: {
+        id: id,
+      },
+    });
   }
 
   update(id: number, updateActivityDto: UpdateActivityDto) {
-    return `This action updates a #${id} activity`;
+    return this.prisma.activity.update({
+      where: { id },
+      data: updateActivityDto,
+    });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} activity`;
+    return this.prisma.activity.delete({
+      where: { id: Number(id) },
+    });
   }
 }

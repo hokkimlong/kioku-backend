@@ -33,6 +33,12 @@ export class PostService {
     });
   }
 
+  // deletePost(userId: number){
+  //   return{
+
+  //   }
+  // }
+
   createPost(userId: number, createPostDto: CreatePostDto) {
     return this.prisma.post.create({
       data: {
