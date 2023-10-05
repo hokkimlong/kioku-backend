@@ -36,7 +36,6 @@ export class ActivityController {
   }
 
   // GET
-
   @Get()
   getActivities(@User() user: RequestUser) {
     return this.activityService.getActivitiesByUserId(+user.id);
@@ -63,7 +62,6 @@ export class ActivityController {
   }
 
   // Patch
-
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -73,7 +71,6 @@ export class ActivityController {
   }
 
   // Delete
-
   @Delete(':id')
   removeActivity(@Param('id') id: string) {
     return this.activityService.remove(+id);

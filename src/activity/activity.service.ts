@@ -55,7 +55,7 @@ export class ActivityService {
   }
 
   findOne(id: number) {
-    return this.prisma.activity.findUniqueOrThrow({
+    return this.prisma.activity.findFirst({
       where: {
         id: id,
       },
