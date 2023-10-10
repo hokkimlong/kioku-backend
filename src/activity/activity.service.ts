@@ -47,6 +47,15 @@ export class ActivityService {
         _count: {
           select: { users: true, informations: true, posts: true },
         },
+        users: {
+          where: {
+            userId: userId,
+          },
+          select: {
+            userId: true,
+            role: true,
+          },
+        },
       },
       orderBy: {
         startDate: 'desc',
