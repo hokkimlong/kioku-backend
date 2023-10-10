@@ -67,6 +67,7 @@ export class ActivityController {
     @Param('id') id: string,
     @Body() updateActivityDto: UpdateActivityDto,
   ) {
+    console.log('Form data', updateActivityDto);
     return this.activityService.update(+id, updateActivityDto);
   }
 

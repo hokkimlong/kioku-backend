@@ -62,10 +62,72 @@ export class ActivityService {
     });
   }
 
-  update(id: number, updateActivityDto: UpdateActivityDto) {
+  async update(id: number, createActivityDto: UpdateActivityDto) {
+    const { startDate, endDate, image, name } = createActivityDto;
+    // query for all current Member List without the admin role
+    const currentActivityMembersList = await this.prisma.activity.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        users: {
+          where: {
+            role: {
+              not: Role.ADMIN,
+            },
+          },
+          select: {
+            userId: true,
+            role: true,
+          },
+        },
+      },
+    });
+    console.log('currentActivityMembersList', currentActivityMembersList.users);
+
+    // get userIds to delete
+    const userIdsToRemove = currentActivityMembersList.users
+      .filter(
+        (user) =>
+          !createActivityDto.members
+            .map((member) => member.id)
+            .includes(user.userId),
+      )
+      .map((user) => user.userId);
+    console.log('userIdsToRemove', userIdsToRemove);
+
+    // get userIds to add
+    const userIdsToAdd = createActivityDto.members
+      .map((member) => member.id)
+      .filter(
+        (id) =>
+          !currentActivityMembersList.users
+            .map((user) => user.userId)
+            .includes(id),
+      );
+    console.log('userIdsToAdd', userIdsToAdd);
+
     return this.prisma.activity.update({
-      where: { id },
-      data: updateActivityDto,
+      where: { id: id },
+      data: {
+        name,
+        image,
+        startDate,
+        endDate,
+        users: {
+          deleteMany: {
+            userId: {
+              in: userIdsToRemove,
+            },
+          },
+          createMany: {
+            data: userIdsToAdd.map((userId) => ({
+              userId,
+              role: Role.USER,
+            })),
+          },
+        },
+      },
     });
   }
 
