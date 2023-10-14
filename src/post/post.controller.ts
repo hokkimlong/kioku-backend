@@ -5,13 +5,11 @@ import {
   Param,
   ParseIntPipe,
   Delete,
-  UseGuards,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { RequestUser, User } from 'src/auth/utils/user-decorator';
 import { CreatePostDto } from './dto/create-post.dto';
 import { CreatePostCommentDto } from './dto/create-post-comment.dto';
-import { ActivityMemberGuard } from 'src/activity-member-guard/activity-member-guard.guard';
 
 @Controller('post')
 export class PostController {
