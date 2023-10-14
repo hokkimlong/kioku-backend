@@ -25,6 +25,8 @@ export class ActivityController {
     private readonly chatService: ChatService,
   ) {}
 
+  // Post
+
   @Post()
   create(
     @User() user: RequestUser,
@@ -33,9 +35,15 @@ export class ActivityController {
     return this.activityService.createActivity(+user.id, createActivityDto);
   }
 
+  // GET
   @Get()
   getActivities(@User() user: RequestUser) {
     return this.activityService.getActivitiesByUserId(+user.id);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.activityService.findOne(+id);
   }
 
   @Get(':id/post')
@@ -53,21 +61,19 @@ export class ActivityController {
     return this.chatService.getChatByActivityId(activityId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.activityService.findOne(+id);
-  }
-
+  // Patch
   @Patch(':id')
   update(
     @Param('id') id: string,
     @Body() updateActivityDto: UpdateActivityDto,
   ) {
+    console.log('Form data', updateActivityDto);
     return this.activityService.update(+id, updateActivityDto);
   }
 
+  // Delete
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  removeActivity(@Param('id') id: string) {
     return this.activityService.remove(+id);
   }
 }

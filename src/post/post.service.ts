@@ -33,6 +33,12 @@ export class PostService {
     });
   }
 
+  // deletePost(userId: number){
+  //   return{
+
+  //   }
+  // }
+
   createPost(userId: number, createPostDto: CreatePostDto) {
     return this.prisma.post.create({
       data: {
@@ -70,6 +76,12 @@ export class PostService {
     }
   }
 
+  async getComments(postId: number) {
+    return this.prisma.postComment.findMany({
+      where: { postId },
+    });
+  }
+
   async createComment(
     userId: number,
     createPostCommentDto: CreatePostCommentDto,
@@ -88,5 +100,9 @@ export class PostService {
         id: commentId,
       },
     });
+  }
+
+  async deletePost(postId: number) {
+    return this.prisma.post.delete({ where: { id: postId } });
   }
 }

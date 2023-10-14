@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { PrismaService } from 'src/prisma.service';
-import { Role } from '@prisma/client';
+import { Prisma, Role } from '@prisma/client';
 
 @Injectable()
 export class ActivityService {
@@ -55,14 +55,85 @@ export class ActivityService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} activity`;
+    return this.prisma.activity.findFirst({
+      where: {
+        id: id,
+      },
+    });
   }
 
-  update(id: number, updateActivityDto: UpdateActivityDto) {
-    return `This action updates a #${id} activity`;
+  async update(id: number, createActivityDto: UpdateActivityDto) {
+    const { startDate, endDate, image, name } = createActivityDto;
+    // query for all current Member List without the admin role
+    const currentActivityMembersList = await this.prisma.activity.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        users: {
+          where: {
+            role: {
+              not: Role.ADMIN,
+            },
+          },
+          select: {
+            userId: true,
+            role: true,
+          },
+        },
+      },
+    });
+    console.log('currentActivityMembersList', currentActivityMembersList.users);
+
+    // get userIds to delete
+    const userIdsToRemove = currentActivityMembersList.users
+      .filter(
+        (user) =>
+          !createActivityDto.members
+            .map((member) => member.id)
+            .includes(user.userId),
+      )
+      .map((user) => user.userId);
+    console.log('userIdsToRemove', userIdsToRemove);
+
+    // get userIds to add
+    const userIdsToAdd = createActivityDto.members
+      .map((member) => member.id)
+      .filter(
+        (id) =>
+          !currentActivityMembersList.users
+            .map((user) => user.userId)
+            .includes(id),
+      );
+    console.log('userIdsToAdd', userIdsToAdd);
+
+    return this.prisma.activity.update({
+      where: { id: id },
+      data: {
+        name,
+        image,
+        startDate,
+        endDate,
+        users: {
+          deleteMany: {
+            userId: {
+              in: userIdsToRemove,
+            },
+          },
+          createMany: {
+            data: userIdsToAdd.map((userId) => ({
+              userId,
+              role: Role.USER,
+            })),
+          },
+        },
+      },
+    });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} activity`;
+    return this.prisma.activity.delete({
+      where: { id: Number(id) },
+    });
   }
 }

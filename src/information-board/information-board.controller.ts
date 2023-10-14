@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { RequestUser, User } from 'src/auth/utils/user-decorator';
 import { CreateInformationBoardDto } from './dto/create-post.dto';
@@ -25,5 +26,10 @@ export class InformationBoardController {
   @Get(':id')
   findActivityInformationById(@Param('id', ParseIntPipe) id: number) {
     return this.informationService.getInformationBoardById(id);
+  }
+
+  @Delete(':id')
+  deleteActivityInformationById(@Param('id', ParseIntPipe) id: number) {
+    return this.informationService.deleteInformationBoardById(id);
   }
 }
