@@ -61,7 +61,7 @@ export class ChatGateway {
     client.leave(`postComment:${data.postId}`); // Leave the room
   }
 
-  @SubscribeMessage('message:comment')
+  @SubscribeMessage('message:postcomment')
   handleComment(
     @MessageBody() data: PostCommentMessage,
     @ConnectedSocket() client: Socket,

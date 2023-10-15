@@ -198,6 +198,19 @@ export class ActivityService {
     });
   }
 
+  userLeaveActivity(userId: number, activityId: number) {
+    return this.prisma.activity.update({
+      where: { id: activityId },
+      data: {
+        users: {
+          deleteMany: {
+            userId: userId,
+          },
+        },
+      },
+    });
+  }
+
   remove(id: number) {
     return this.prisma.activity.delete({
       where: { id: Number(id) },
