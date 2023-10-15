@@ -122,11 +122,11 @@ export class ActivityService {
       },
       include: {
         users: {
-          where: {
-            role: {
-              not: Role.ADMIN,
-            },
-          },
+          // where: {
+          //   role: {
+          //     not: Role.ADMIN,
+          //   },
+          // },
           select: {
             userId: true,
             role: true,
@@ -135,6 +135,22 @@ export class ActivityService {
       },
     });
     console.log('currentActivityMembersList', currentActivityMembersList.users);
+    // remove admin from createActivityDto.members
+    const findAdminToExclude = () => {
+      createActivityDto.members = createActivityDto.members.filter((member) => {
+        const index = currentActivityMembersList.users.findIndex(
+          (user) => user.userId === member.id && user.role === Role.ADMIN,
+        );
+        if (index !== -1) {
+          console.log('found admin', member);
+          currentActivityMembersList.users.splice(index, 1);
+          return false;
+        }
+        return true;
+      });
+    };
+    findAdminToExclude();
+    console.log('createActivityDto.members', createActivityDto.members);
 
     // get userIds to delete
     const userIdsToRemove = currentActivityMembersList.users
