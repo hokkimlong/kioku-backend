@@ -6,8 +6,19 @@ export class JoinGroupChatDto {
   activityId: number;
 }
 
+export class JoinCommentDto {
+  @IsNumber()
+  postId: number;
+}
+
 export class GroupChatMessage {
   activityId: number;
+  message: string;
+  sender: RequestUser;
+}
+
+export class PostCommentMessage {
+  postId: number;
   message: string;
   sender: RequestUser;
 }
