@@ -20,6 +20,15 @@ export class NotificationService {
 
   _createNotification(data: any, sender: RequestUser, receiver: RequestUser[]) {
     const { message, activityId } = data;
+    console.log(
+      receiver.map((user) => ({
+        message,
+        activityId,
+        senderId: sender.id,
+        receiverId: user.id,
+        ...data,
+      })),
+    );
     return this.prisma.notification.createMany({
       data: receiver.map((user) => ({
         message,

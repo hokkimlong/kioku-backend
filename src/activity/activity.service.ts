@@ -47,7 +47,7 @@ export class ActivityService {
         activityId: result.id,
       },
       user,
-      createActivityDto.members.slice(1).map((member) => ({
+      createActivityDto.members.map((member) => ({
         id: member.id,
       })),
     );
