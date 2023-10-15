@@ -70,8 +70,13 @@ export class ActivityController {
     @Param('id') id: string,
     @Body() updateActivityDto: UpdateActivityDto,
   ) {
-    console.log('Form data', updateActivityDto);
+    // console.log('Form data', updateActivityDto);
     return this.activityService.update(+id, updateActivityDto);
+  }
+
+  @Patch('/leave/:id')
+  userLeaveActivity(@Param('id') id: string, @User() user: RequestUser) {
+    return this.activityService.userLeaveActivity(+user.id, +id);
   }
 
   // Delete
