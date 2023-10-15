@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { NotificationService } from './notification.service';
 import { RequestUser, User } from 'src/auth/utils/user-decorator';
@@ -13,5 +13,10 @@ export class NotificationController {
   @Get()
   getNotificationByUserId(@User() user: RequestUser) {
     return this.notificationService.getNotificationByUserId(user.id);
+  }
+
+  @Post()
+  markAsSeen(@User() user: RequestUser) {
+    return this.notificationService.markAsSeen(user.id);
   }
 }

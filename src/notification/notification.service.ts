@@ -6,8 +6,14 @@ import { PrismaService } from 'src/prisma.service';
 export class NotificationService {
   constructor(private readonly prisma: PrismaService) {}
 
-  getNotificationByUserId(userId: number) {
-    return this.prisma.notification.findMany({
+  async getNotificationByUserId(userId: number) {
+    const unSeenCount = await this.prisma.notification.count({
+      where: {
+        receiverId: userId,
+        isSeen: false,
+      },
+    });
+    const result = await this.prisma.notification.findMany({
       where: {
         receiverId: userId,
       },
@@ -16,19 +22,27 @@ export class NotificationService {
         activity: true,
       },
     });
+    return {
+      unSeenCount,
+      data: result,
+    };
+  }
+
+  async markAsSeen(userId: number) {
+    return this.prisma.notification.updateMany({
+      data: {
+        isSeen: true,
+      },
+      where: {
+        receiverId: userId,
+        isSeen: false,
+      },
+    });
   }
 
   _createNotification(data: any, sender: RequestUser, receiver: RequestUser[]) {
     const { message, activityId } = data;
-    console.log(
-      receiver.map((user) => ({
-        message,
-        activityId,
-        senderId: sender.id,
-        receiverId: user.id,
-        ...data,
-      })),
-    );
+
     return this.prisma.notification.createMany({
       data: receiver.map((user) => ({
         message,
