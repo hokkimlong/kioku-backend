@@ -14,10 +14,13 @@ export class UsersService {
     return this.prismaService.user.create({ data });
   }
 
-  async getUsers(userId: number) {
+  async getUsers(userId: number, search: string) {
     return this.prismaService.user.findMany({
       select: { id: true, username: true, email: true },
-      where: { id: { not: { equals: userId } } },
+      where: {
+        id: { not: { equals: userId } },
+        username: { contains: search },
+      },
     });
   }
 }

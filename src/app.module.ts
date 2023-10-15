@@ -13,6 +13,7 @@ import { AuthGuard } from './auth/auth.guard';
 import { PostModule } from './post/post.module';
 import { InformationBoardModule } from './information-board/information-board.module';
 import { ChatModule } from './chat/chat.module';
+import { ChatGateway } from './chat/chat.gateway';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ChatModule } from './chat/chat.module';
     AppService,
     PrismaService,
     UsersService,
+    ChatGateway,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,

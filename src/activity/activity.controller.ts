@@ -47,8 +47,11 @@ export class ActivityController {
   }
 
   @Get(':id/post')
-  getActivityPosts(@Param('id', ParseIntPipe) activityId: number) {
-    return this.postService.getPostsByActivityId(activityId);
+  getActivityPosts(
+    @Param('id', ParseIntPipe) activityId: number,
+    @User() user: RequestUser,
+  ) {
+    return this.postService.getPostsByActivityId(user.id, activityId);
   }
 
   @Get(':id/information')

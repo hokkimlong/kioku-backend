@@ -32,4 +32,15 @@ export class InformationBoardController {
   deleteActivityInformationById(@Param('id', ParseIntPipe) id: number) {
     return this.informationService.deleteInformationBoardById(id);
   }
+
+  @Post(':id')
+  updateInformationBoardById(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() createInformationBoardDto: CreateInformationBoardDto,
+  ) {
+    return this.informationService.updateInformationBoardById(
+      id,
+      createInformationBoardDto,
+    );
+  }
 }

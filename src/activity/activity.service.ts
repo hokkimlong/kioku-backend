@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { PrismaService } from 'src/prisma.service';
-import { Prisma, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class ActivityService {
@@ -35,7 +35,7 @@ export class ActivityService {
   }
 
   async getActivitiesByUserId(userId: number) {
-    return this.prisma.activity.findMany({
+    const result = await this.prisma.activity.findMany({
       where: {
         users: {
           some: {
@@ -49,11 +49,8 @@ export class ActivityService {
         },
         users: {
           where: {
-            userId: userId,
-          },
-          select: {
-            userId: true,
-            role: true,
+            role: Role.ADMIN,
+            userId,
           },
         },
       },
@@ -61,14 +58,38 @@ export class ActivityService {
         startDate: 'desc',
       },
     });
+
+    return result.map(({ users, ...activity }) => ({
+      ...activity,
+      isAdmin: users.length > 0,
+    }));
   }
 
-  findOne(id: number) {
-    return this.prisma.activity.findFirst({
+  async findOne(id: number) {
+    const result = await this.prisma.activity.findFirst({
       where: {
         id: id,
       },
+      include: {
+        users: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+              },
+            },
+          },
+        },
+      },
     });
+
+    return {
+      ...result,
+      users: result.users.map((user: any) => {
+        return user.user;
+      }),
+    };
   }
 
   async update(id: number, createActivityDto: UpdateActivityDto) {

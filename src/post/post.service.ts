@@ -7,8 +7,8 @@ import { CreatePostCommentDto } from './dto/create-post-comment.dto';
 export class PostService {
   constructor(private readonly prisma: PrismaService) {}
 
-  getPostsByActivityId(activityId: number) {
-    return this.prisma.post.findMany({
+  async getPostsByActivityId(userId: number, activityId: number) {
+    const result = await this.prisma.post.findMany({
       where: {
         activityId,
       },
@@ -26,18 +26,44 @@ export class PostService {
             username: true,
           },
         },
+        postLikes: {
+          where: {
+            userId,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
+
+    return result.map(({ postLikes, ...post }) => ({
+      ...post,
+      isLike: postLikes.length > 0,
+    }));
   }
 
-  // deletePost(userId: number){
-  //   return{
+  async updatePost(postId: number, createPostDto: CreatePostDto) {
+    await this.prisma.postImage.deleteMany({
+      where: {
+        postId,
+      },
+    });
 
-  //   }
-  // }
+    return this.prisma.post.update({
+      data: {
+        description: createPostDto.description,
+        postImages: {
+          createMany: {
+            data: createPostDto.images,
+          },
+        },
+      },
+      where: {
+        id: postId,
+      },
+    });
+  }
 
   createPost(userId: number, createPostDto: CreatePostDto) {
     return this.prisma.post.create({
@@ -79,6 +105,9 @@ export class PostService {
   async getComments(postId: number) {
     return this.prisma.postComment.findMany({
       where: { postId },
+      include: {
+        user: true,
+      },
     });
   }
 
@@ -104,5 +133,22 @@ export class PostService {
 
   async deletePost(postId: number) {
     return this.prisma.post.delete({ where: { id: postId } });
+  }
+
+  async getPost(postId: number) {
+    const result = await this.prisma.post.findFirst({
+      where: { id: postId },
+      include: {
+        postImages: true,
+        user: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
+    });
+
+    return result;
   }
 }

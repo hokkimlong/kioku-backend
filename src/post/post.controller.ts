@@ -12,7 +12,6 @@ import { PostService } from './post.service';
 import { RequestUser, User } from 'src/auth/utils/user-decorator';
 import { CreatePostDto } from './dto/create-post.dto';
 import { CreatePostCommentDto } from './dto/create-post-comment.dto';
-import { ActivityMemberGuard } from 'src/activity-member-guard/activity-member-guard.guard';
 
 @Controller('post')
 export class PostController {
@@ -33,6 +32,14 @@ export class PostController {
   }
 
   @Post(':id')
+  updatePost(
+    @Param('id', ParseIntPipe) postId,
+    @Body() createPostDto: CreatePostDto,
+  ) {
+    return this.postService.updatePost(postId, createPostDto);
+  }
+
+  @Post(':id/like')
   likePost(@User() user: RequestUser, @Param('id', ParseIntPipe) postId) {
     return this.postService.likePost(user.id, postId);
   }
@@ -40,6 +47,11 @@ export class PostController {
   @Get(':id/comments')
   getPosts(@Param('id', ParseIntPipe) postId) {
     return this.postService.getComments(postId);
+  }
+
+  @Get(':id')
+  getPost(@Param('id', ParseIntPipe) postId) {
+    return this.postService.getPost(postId);
   }
 
   @Delete('comment/:id')
