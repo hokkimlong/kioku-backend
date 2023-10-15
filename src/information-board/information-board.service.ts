@@ -50,4 +50,31 @@ export class InformationBoardService {
       },
     });
   }
+
+  deleteInformationBoardById(id: number) {
+    return this.prisma.information.delete({ where: { id } });
+  }
+
+  async updateInformationBoardById(
+    id: number,
+    data: CreateInformationBoardDto,
+  ) {
+    await this.prisma.informationImage.deleteMany({
+      where: {
+        informationId: id,
+      },
+    });
+    return this.prisma.information.update({
+      where: { id },
+      data: {
+        title: data.title,
+        description: data.description,
+        images: {
+          createMany: {
+            data: data.images,
+          },
+        },
+      },
+    });
+  }
 }

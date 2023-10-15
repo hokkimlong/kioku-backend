@@ -22,7 +22,7 @@ model User {
 }
 
 model Activity {
-  id           Int             @id @default(autoincrement())
+  id           Int             @id @default(autoincrement()) 
   name         String
   image        String
   startDate    DateTime        @default(now())
@@ -38,7 +38,7 @@ model ActivityUsers {
   userId     Int
   activityId Int
   role       Role     @default(USER)
-  activity   Activity @relation(fields: [activityId], references: [id])
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
   user       User     @relation(fields: [userId], references: [id])
 
   @@id([userId, activityId])
@@ -51,7 +51,7 @@ model Information {
   activityId  Int
   userId      Int
   createdAt   DateTime           @default(now())
-  activity    Activity           @relation(fields: [activityId], references: [id])
+  activity    Activity           @relation(fields: [activityId], references: [id], onDelete: Cascade)
   user        User               @relation(fields: [userId], references: [id])
   images      InformationImage[]
 }
@@ -60,7 +60,7 @@ model InformationImage {
   id            Int         @id @default(autoincrement())
   informationId Int
   uri           String
-  information   Information @relation(fields: [informationId], references: [id])
+  information   Information @relation(fields: [informationId], references: [id], onDelete: Cascade)
 }
 
 model GroupChat {
@@ -69,7 +69,7 @@ model GroupChat {
   userId     Int
   message    String
   createdAt  DateTime @default(now())
-  activity   Activity @relation(fields: [activityId], references: [id])
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
   user       User     @relation(fields: [userId], references: [id])
 }
 
@@ -79,7 +79,7 @@ model Post {
   userId       Int
   description  String
   createdAt    DateTime      @default(now())
-  activity     Activity      @relation(fields: [activityId], references: [id])
+  activity     Activity      @relation(fields: [activityId], references: [id] , onDelete: Cascade)
   user         User          @relation(fields: [userId], references: [id])
   postComments PostComment[]
   postImages   PostImage[]
@@ -90,7 +90,7 @@ model PostImage {
   id     Int    @id @default(autoincrement())
   uri    String
   postId Int
-  post   Post   @relation(fields: [postId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model PostLike {
@@ -98,7 +98,7 @@ model PostLike {
   postId    Int
   userId    Int
   createdAt DateTime @default(now())
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id])
 }
 
@@ -108,7 +108,7 @@ model PostComment {
   userId    Int
   message   String
   createdAt DateTime @default(now())
-  post      Post     @relation(fields: [postId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id])
 }
 
