@@ -2,10 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { CreatePostCommentDto } from './dto/create-post-comment.dto';
+import { NotificationService } from 'src/notification/notification.service';
+import { RequestUser } from 'src/auth/utils/user-decorator';
 
 @Injectable()
 export class PostService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   async getPostsByActivityId(userId: number, activityId: number) {
     const result = await this.prisma.post.findMany({
@@ -65,10 +70,10 @@ export class PostService {
     });
   }
 
-  createPost(userId: number, createPostDto: CreatePostDto) {
-    return this.prisma.post.create({
+  async createPost(user: RequestUser, createPostDto: CreatePostDto) {
+    const result = await this.prisma.post.create({
       data: {
-        userId,
+        userId: user.id,
         activityId: createPostDto.activityId,
         description: createPostDto.description,
         postImages: {
@@ -78,6 +83,26 @@ export class PostService {
         },
       },
     });
+
+    const activityUsers = await this.prisma.activityUsers.findMany({
+      where: {
+        activityId: createPostDto.activityId,
+        userId: {
+          not: user.id,
+        },
+      },
+    });
+
+    await this.notificationService.createNewPostNotification(
+      {
+        activityId: createPostDto.activityId,
+        postId: result.id,
+      },
+      user,
+      activityUsers.map(({ userId }) => ({ id: userId })),
+    );
+
+    return result;
   }
 
   async likePost(userId: number, postId: number) {

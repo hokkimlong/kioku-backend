@@ -32,7 +32,7 @@ export class ActivityController {
     @User() user: RequestUser,
     @Body() createActivityDto: CreateActivityDto,
   ) {
-    return this.activityService.createActivity(+user.id, createActivityDto);
+    return this.activityService.createActivity(user, createActivityDto);
   }
 
   // GET

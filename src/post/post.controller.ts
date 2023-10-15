@@ -19,7 +19,7 @@ export class PostController {
 
   @Post()
   createPosts(@User() user: RequestUser, @Body() createPostDto: CreatePostDto) {
-    return this.postService.createPost(user.id, createPostDto);
+    return this.postService.createPost(user, createPostDto);
   }
 
   @Post('comment')

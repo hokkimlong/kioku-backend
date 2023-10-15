@@ -20,7 +20,7 @@ export class InformationBoardController {
     @User() user: RequestUser,
     @Body() createInformationBoardDto: CreateInformationBoardDto,
   ) {
-    return this.informationService.create(user.id, createInformationBoardDto);
+    return this.informationService.create(user, createInformationBoardDto);
   }
 
   @Get(':id')

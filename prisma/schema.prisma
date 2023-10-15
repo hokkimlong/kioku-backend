@@ -8,21 +8,23 @@ datasource db {
 }
 
 model User {
-  id           Int             @id @default(autoincrement())
-  username     String          @unique
-  email        String          @unique
-  password     String
-  createdAt    DateTime        @default(now())
-  activities   ActivityUsers[]
-  groupChats   GroupChat[]
-  informations Information[]
-  posts        Post[]
-  PostComment  PostComment[]
-  PostLike     PostLike[]
+  id                   Int             @id @default(autoincrement())
+  username             String          @unique
+  email                String          @unique
+  password             String
+  createdAt            DateTime        @default(now())
+  activities           ActivityUsers[]
+  groupChats           GroupChat[]
+  informations         Information[]
+  posts                Post[]
+  PostComment          PostComment[]
+  PostLike             PostLike[]
+  NotificationSent     Notification[]  @relation("sender")
+  NotificationRecieved Notification[]  @relation("receiver")
 }
 
 model Activity {
-  id           Int             @id @default(autoincrement()) 
+  id           Int             @id @default(autoincrement())
   name         String
   image        String
   startDate    DateTime        @default(now())
@@ -32,6 +34,7 @@ model Activity {
   groupChats   GroupChat[]
   informations Information[]
   posts        Post[]
+  Notification Notification[]
 }
 
 model ActivityUsers {
@@ -45,15 +48,16 @@ model ActivityUsers {
 }
 
 model Information {
-  id          Int                @id @default(autoincrement())
-  title       String
-  description String
-  activityId  Int
-  userId      Int
-  createdAt   DateTime           @default(now())
-  activity    Activity           @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  user        User               @relation(fields: [userId], references: [id])
-  images      InformationImage[]
+  id           Int                @id @default(autoincrement())
+  title        String
+  description  String
+  activityId   Int
+  userId       Int
+  createdAt    DateTime           @default(now())
+  activity     Activity           @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user         User               @relation(fields: [userId], references: [id])
+  images       InformationImage[]
+  Notification Notification[]
 }
 
 model InformationImage {
@@ -74,16 +78,17 @@ model GroupChat {
 }
 
 model Post {
-  id           Int           @id @default(autoincrement())
+  id           Int            @id @default(autoincrement())
   activityId   Int
   userId       Int
   description  String
-  createdAt    DateTime      @default(now())
-  activity     Activity      @relation(fields: [activityId], references: [id] , onDelete: Cascade)
-  user         User          @relation(fields: [userId], references: [id])
+  createdAt    DateTime       @default(now())
+  activity     Activity       @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user         User           @relation(fields: [userId], references: [id])
   postComments PostComment[]
   postImages   PostImage[]
   postLikes    PostLike[]
+  Notification Notification[]
 }
 
 model PostImage {
@@ -115,4 +120,22 @@ model PostComment {
 enum Role {
   ADMIN
   USER
+}
+
+model Notification {
+  id            Int         @id @default(autoincrement())
+  activityId    Int
+  activity      Activity    @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  postId        Int
+  post          Post        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  informationId Int
+  information   Information @relation(fields: [informationId], references: [id], onDelete: Cascade)
+  message       String
+  senderId      Int
+  sender        User        @relation("sender", fields: [senderId], references: [id])
+  receiverId    Int
+  receiver      User        @relation("receiver", fields: [receiverId], references: [id])
+  isRead        Boolean     @default(false)
+  isSeen        Boolean     @default(false)
+  createdAt     DateTime    @default(now())
 }

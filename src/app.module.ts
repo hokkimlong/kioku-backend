@@ -14,6 +14,7 @@ import { PostModule } from './post/post.module';
 import { InformationBoardModule } from './information-board/information-board.module';
 import { ChatModule } from './chat/chat.module';
 import { ChatGateway } from './chat/chat.gateway';
+import { NotificationModule } from './notification/notification.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ChatGateway } from './chat/chat.gateway';
     PostModule,
     InformationBoardModule,
     ChatModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [

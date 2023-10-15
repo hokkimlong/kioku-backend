@@ -3,14 +3,23 @@ import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 import { PrismaService } from 'src/prisma.service';
 import { Role } from '@prisma/client';
+import { NotificationService } from 'src/notification/notification.service';
+import { RequestUser } from 'src/auth/utils/user-decorator';
 
 @Injectable()
 export class ActivityService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
-  createActivity(userId: number, createActivityDto: CreateActivityDto) {
+  async createActivity(
+    user: RequestUser,
+    createActivityDto: CreateActivityDto,
+  ) {
     const { startDate, endDate, image, name } = createActivityDto;
-    return this.prisma.activity.create({
+
+    const result = await this.prisma.activity.create({
       data: {
         name,
         image,
@@ -20,7 +29,7 @@ export class ActivityService {
           createMany: {
             data: [
               {
-                userId,
+                userId: user.id,
                 role: Role.ADMIN,
               },
               ...createActivityDto.members.map((member) => ({
@@ -32,6 +41,18 @@ export class ActivityService {
         },
       },
     });
+
+    await this.notificationService.createNewActivityNotification(
+      {
+        activityId: result.id,
+      },
+      user,
+      createActivityDto.members.slice(1).map((member) => ({
+        id: member.id,
+      })),
+    );
+
+    return result;
   }
 
   async getActivitiesByUserId(userId: number) {

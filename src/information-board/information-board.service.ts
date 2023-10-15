@@ -1,17 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { CreateInformationBoardDto } from './dto/create-post.dto';
+import { NotificationService } from 'src/notification/notification.service';
+import { RequestUser } from 'src/auth/utils/user-decorator';
 
 @Injectable()
 export class InformationBoardService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private notificationService: NotificationService,
+  ) {}
 
-  create(userId: number, createInformationBoardDto: CreateInformationBoardDto) {
-    return this.prisma.information.create({
+  async create(
+    user: RequestUser,
+    createInformationBoardDto: CreateInformationBoardDto,
+  ) {
+    const result = await this.prisma.information.create({
       data: {
         title: createInformationBoardDto.title,
         description: createInformationBoardDto.description,
-        userId,
+        userId: user.id,
         activityId: createInformationBoardDto.activityId,
         images: {
           createMany: {
@@ -20,6 +28,26 @@ export class InformationBoardService {
         },
       },
     });
+
+    const activityUsers = await this.prisma.activityUsers.findMany({
+      where: {
+        activityId: createInformationBoardDto.activityId,
+        userId: {
+          not: user.id,
+        },
+      },
+    });
+
+    await this.notificationService.createNewInformationNotification(
+      {
+        activityId: createInformationBoardDto.activityId,
+        informationId: result.id,
+      },
+      user,
+      activityUsers.map((activityUser) => ({ id: activityUser.userId })),
+    );
+
+    return result;
   }
 
   getInformationBoardByActivityId(activityId: number) {

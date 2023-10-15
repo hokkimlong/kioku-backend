@@ -2,8 +2,8 @@ import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 
 export type RequestUser = {
   id: number;
-  username: string;
-  email: string;
+  username?: string;
+  email?: string;
 };
 
 export const User = createParamDecorator(
