@@ -11,6 +11,11 @@ import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user-dto';
 import { Public } from './auth.guard';
 import { RequestUser, User } from './utils/user-decorator';
+import {
+  ForgotPasswordDto,
+  ResetPasswordDto,
+  VerifiyForgotPasswordDto,
+} from './dto/forgot-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -32,5 +37,27 @@ export class AuthController {
   @Get('profile')
   getProfile(@User() user: RequestUser) {
     return user;
+  }
+
+  @Public()
+  @Post('/forgot-password')
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return await this.authService.forgotPassword(forgotPasswordDto);
+  }
+
+  @Public()
+  @Post('/verify-forgot-password')
+  async verifyForgotPassword(
+    @Body() verifyForgotPasswordDto: VerifiyForgotPasswordDto,
+  ) {
+    return await this.authService.verifyForgotPasswordCode(
+      verifyForgotPasswordDto,
+    );
+  }
+
+  @Public()
+  @Post('/reset-password')
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return await this.authService.resetPassword(resetPasswordDto);
   }
 }

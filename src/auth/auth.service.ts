@@ -8,6 +8,17 @@ import { UsersService } from 'src/users/users.service';
 import { LoginUserDto } from './dto/login-user-dto';
 import { JwtService } from '@nestjs/jwt';
 import { hashPassword, verifyPassword } from 'src/auth/utils/password';
+import {
+  ForgotPasswordDto,
+  ResetPasswordDto,
+  VerifiyForgotPasswordDto,
+} from './dto/forgot-password.dto';
+import {
+  generateForgotPasswordCode,
+  isValidForgotPasswordToken,
+  sendForgotPasswordMail,
+  validateForgotPasswordCode,
+} from './utils/send-forgot-password-mail';
 
 @Injectable()
 export class AuthService {
@@ -24,8 +35,8 @@ export class AuthService {
   }
 
   async login(loginUserDto: LoginUserDto) {
-    const { email, password } = loginUserDto;
-    const user = await this.usersService.findByEmail(email);
+    const { identifier, password } = loginUserDto;
+    const user = await this.usersService.findByEmailOrUsername(identifier);
     if (!user) {
       throw new NotFoundException({ message: 'user not found' });
     }
@@ -41,5 +52,70 @@ export class AuthService {
         access_token: await this.jwtService.signAsync(payload),
       };
     }
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const { identifier } = forgotPasswordDto;
+    const user = await this.usersService.findByEmailOrUsername(identifier);
+    if (!user) {
+      throw new NotFoundException({ message: 'user not found' });
+    }
+
+    const code = generateForgotPasswordCode(user.email);
+
+    sendForgotPasswordMail(user.email, code);
+
+    return {
+      message: 'forgot password code sent to your email',
+      identifier,
+    };
+  }
+
+  async verifyForgotPasswordCode(
+    verifiyForgotPasswordDto: VerifiyForgotPasswordDto,
+  ) {
+    const { identifier, code } = verifiyForgotPasswordDto;
+    const user = await this.usersService.findByEmailOrUsername(identifier);
+    if (!user) {
+      throw new NotFoundException({ message: 'user not found' });
+    }
+
+    const validToken = validateForgotPasswordCode(user.email, code);
+
+    if (!validToken) {
+      throw new UnauthorizedException({ message: 'invalid code' });
+    }
+
+    return {
+      message: 'code verified',
+      validToken,
+      identifier,
+    };
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const user = await this.usersService.findByEmailOrUsername(
+      resetPasswordDto.identifier,
+    );
+    if (!user) {
+      throw new NotFoundException({ message: 'user not found' });
+    }
+
+    const isValidToken = isValidForgotPasswordToken(
+      user.email,
+      resetPasswordDto.token,
+    );
+
+    if (!isValidToken) {
+      throw new UnauthorizedException({ message: 'invalid token' });
+    }
+
+    const newPassword = await hashPassword(resetPasswordDto.newPassword);
+
+    await this.usersService.updatePassword(user.id, newPassword);
+
+    return {
+      message: 'password reset successfully',
+    };
   }
 }
