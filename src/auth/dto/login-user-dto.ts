@@ -1,10 +1,10 @@
 import { Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 export class LoginUserDto {
-  @IsEmail()
+  @IsNotEmpty()
   @Transform((param) => param.value.toLowerCase())
-  email: string;
+  identifier: string;
 
   @IsNotEmpty()
   password: string;

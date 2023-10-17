@@ -23,4 +23,19 @@ export class UsersService {
       },
     });
   }
+
+  async findByEmailOrUsername(identifier: string) {
+    return this.prismaService.user.findFirst({
+      where: {
+        OR: [{ email: identifier }, { username: identifier }],
+      },
+    });
+  }
+
+  async updatePassword(id: number, password: string) {
+    return this.prismaService.user.update({
+      where: { id },
+      data: { password },
+    });
+  }
 }
