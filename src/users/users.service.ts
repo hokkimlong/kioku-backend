@@ -19,7 +19,7 @@ export class UsersService {
       select: { id: true, username: true, email: true },
       where: {
         id: { not: { equals: userId } },
-        username: { contains: search },
+        username: { contains: search.toLowerCase(), mode: 'insensitive' },
       },
     });
   }

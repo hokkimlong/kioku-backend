@@ -2,7 +2,7 @@ import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 
 export class RegisterUserDto {
-  @MinLength(3)
+  @MinLength(1)
   @Transform((param) => param.value.toLowerCase())
   username: string;
 
