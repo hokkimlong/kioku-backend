@@ -52,4 +52,16 @@ export class UsersService {
       data: { password },
     });
   }
+
+  async updateUsername(id: number, username: string) {
+    return this.prismaService.user.update({
+      where: { id },
+      data: { username },
+    });
+  }
+
+  async deleteUser(id: number) {
+    console.log('delete', id);
+    return this.prismaService.user.delete({ where: { id } });
+  }
 }

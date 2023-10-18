@@ -125,4 +125,15 @@ export class AuthService {
       message: 'password reset successfully',
     };
   }
+
+  async editUsername(editUsernameDto: { username: string }, user: RequestUser) {
+    const { username } = editUsernameDto;
+    console.log('user', user);
+    console.log('username', username);
+    // const updatedUser = await this.usersService.updateUsername(
+    //   user.id,
+    //   username,
+    // );
+    // return updatedUser;
+  }
 }
