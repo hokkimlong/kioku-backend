@@ -36,7 +36,8 @@ export class AuthController {
 
   @Get('profile')
   getProfile(@User() user: RequestUser) {
-    return user;
+    const data = this.authService.getProfile(user);
+    return data;
   }
 
   @Public()

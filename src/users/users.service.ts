@@ -24,6 +24,20 @@ export class UsersService {
     });
   }
 
+  async getUserById(id: number) {
+    return this.prismaService.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        activities: true,
+        posts: true,
+        createdAt: true,
+      },
+    });
+  }
+
   async findByEmailOrUsername(identifier: string) {
     return this.prismaService.user.findFirst({
       where: {
