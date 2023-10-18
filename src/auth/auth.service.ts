@@ -19,6 +19,7 @@ import {
   sendForgotPasswordMail,
   validateForgotPasswordCode,
 } from './utils/send-forgot-password-mail';
+import { RequestUser } from './utils/user-decorator';
 
 @Injectable()
 export class AuthService {
@@ -36,6 +37,7 @@ export class AuthService {
 
   async login(loginUserDto: LoginUserDto) {
     const { identifier, password } = loginUserDto;
+
     const user = await this.usersService.findByEmailOrUsername(identifier);
     if (!user) {
       throw new NotFoundException({ message: 'user not found' });
@@ -52,6 +54,11 @@ export class AuthService {
         access_token: await this.jwtService.signAsync(payload),
       };
     }
+  }
+
+  async getProfile(user: RequestUser) {
+    const userProfile = await this.usersService.getUserById(user.id);
+    return userProfile;
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
@@ -117,5 +124,16 @@ export class AuthService {
     return {
       message: 'password reset successfully',
     };
+  }
+
+  async editUsername(editUsernameDto: { username: string }, user: RequestUser) {
+    const { username } = editUsernameDto;
+    console.log('user', user);
+    console.log('username', username);
+    // const updatedUser = await this.usersService.updateUsername(
+    //   user.id,
+    //   username,
+    // );
+    // return updatedUser;
   }
 }

@@ -36,7 +36,8 @@ export class AuthController {
 
   @Get('profile')
   getProfile(@User() user: RequestUser) {
-    return user;
+    const data = this.authService.getProfile(user);
+    return data;
   }
 
   @Public()
@@ -59,5 +60,14 @@ export class AuthController {
   @Post('/reset-password')
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return await this.authService.resetPassword(resetPasswordDto);
+  }
+
+  @Public()
+  @Post('/edit-username')
+  async editUsername(
+    @Body() editUsernameDto: { username: string },
+    @User() user: RequestUser,
+  ) {
+    return await this.authService.editUsername(editUsernameDto, user);
   }
 }

@@ -24,6 +24,20 @@ export class UsersService {
     });
   }
 
+  async getUserById(id: number) {
+    return this.prismaService.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        activities: true,
+        posts: true,
+        createdAt: true,
+      },
+    });
+  }
+
   async findByEmailOrUsername(identifier: string) {
     return this.prismaService.user.findFirst({
       where: {
@@ -37,5 +51,17 @@ export class UsersService {
       where: { id },
       data: { password },
     });
+  }
+
+  async updateUsername(id: number, username: string) {
+    return this.prismaService.user.update({
+      where: { id },
+      data: { username },
+    });
+  }
+
+  async deleteUser(id: number) {
+    console.log('delete', id);
+    return this.prismaService.user.delete({ where: { id } });
   }
 }
