@@ -42,7 +42,7 @@ model ActivityUsers {
   activityId Int
   role       Role     @default(USER)
   activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, activityId])
 }
@@ -55,7 +55,7 @@ model Information {
   userId       Int
   createdAt    DateTime           @default(now())
   activity     Activity           @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  user         User               @relation(fields: [userId], references: [id])
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   images       InformationImage[]
   Notification Notification[]
 }
@@ -74,7 +74,7 @@ model GroupChat {
   message    String
   createdAt  DateTime @default(now())
   activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Post {
@@ -84,7 +84,7 @@ model Post {
   description  String
   createdAt    DateTime       @default(now())
   activity     Activity       @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  user         User           @relation(fields: [userId], references: [id])
+  user         User           @relation(fields: [userId], references: [id],onDelete: Cascade)
   postComments PostComment[]
   postImages   PostImage[]
   postLikes    PostLike[]
@@ -104,7 +104,7 @@ model PostLike {
   userId    Int
   createdAt DateTime @default(now())
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model PostComment {
@@ -114,7 +114,7 @@ model PostComment {
   message   String
   createdAt DateTime @default(now())
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
@@ -132,9 +132,9 @@ model Notification {
   information   Information? @relation(fields: [informationId], references: [id], onDelete: Cascade)
   message       String
   senderId      Int
-  sender        User         @relation("sender", fields: [senderId], references: [id])
+  sender        User         @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
   receiverId    Int
-  receiver      User         @relation("receiver", fields: [receiverId], references: [id])
+  receiver      User         @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
   isRead        Boolean      @default(false)
   isSeen        Boolean      @default(false)
   createdAt     DateTime     @default(now())
