@@ -62,12 +62,19 @@ export class AuthController {
     return await this.authService.resetPassword(resetPasswordDto);
   }
 
-  @Public()
   @Post('/edit-username')
-  async editUsername(
-    @Body() editUsernameDto: { username: string },
+  editUsername(
     @User() user: RequestUser,
+    @Body() editUsernameDto: { username: string },
   ) {
-    return await this.authService.editUsername(editUsernameDto, user);
+    return this.authService.editUsername(user, editUsernameDto);
+  }
+
+  @Post('/edit-email')
+  editEmail(
+    @User() user: RequestUser,
+    @Body() editEmailDto: { email: string },
+  ) {
+    return this.authService.editEmail(user, editEmailDto);
   }
 }

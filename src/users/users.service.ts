@@ -60,6 +60,13 @@ export class UsersService {
     });
   }
 
+  async updateEmail(id: number, email: string) {
+    return this.prismaService.user.update({
+      where: { id },
+      data: { email },
+    });
+  }
+
   async deleteUser(id: number) {
     console.log('delete', id);
     return this.prismaService.user.delete({ where: { id } });

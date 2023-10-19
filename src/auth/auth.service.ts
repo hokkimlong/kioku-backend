@@ -126,14 +126,18 @@ export class AuthService {
     };
   }
 
-  async editUsername(editUsernameDto: { username: string }, user: RequestUser) {
+  async editUsername(user: RequestUser, editUsernameDto: { username: string }) {
     const { username } = editUsernameDto;
-    console.log('user', user);
-    console.log('username', username);
-    // const updatedUser = await this.usersService.updateUsername(
-    //   user.id,
-    //   username,
-    // );
-    // return updatedUser;
+    const updatedUser = await this.usersService.updateUsername(
+      user.id,
+      username,
+    );
+    return updatedUser;
+  }
+
+  async editEmail(user: RequestUser, editEmailDto: { email: string }) {
+    const { email } = editEmailDto;
+    const updatedUser = await this.usersService.updateEmail(user.id, email);
+    return updatedUser;
   }
 }
