@@ -61,6 +61,12 @@ export class InformationBoardService {
             images: true,
           },
         },
+        user: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',
@@ -75,6 +81,11 @@ export class InformationBoardService {
       },
       include: {
         images: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
       },
     });
   }

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
   ParseIntPipe,
 } from '@nestjs/common';
 import { ActivityService } from './activity.service';
@@ -37,13 +38,13 @@ export class ActivityController {
 
   // GET
   @Get()
-  getActivities(@User() user: RequestUser) {
-    return this.activityService.getActivitiesByUserId(+user.id);
+  getActivities(@User() user: RequestUser, @Query('status') status: string) {
+    return this.activityService.getActivitiesByUserId(+user.id, { status });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.activityService.findOne(+id);
+  findOne(@Param('id') id: string, @User() user: RequestUser) {
+    return this.activityService.findOne(+id, +user.id);
   }
 
   @Get(':id/post')
