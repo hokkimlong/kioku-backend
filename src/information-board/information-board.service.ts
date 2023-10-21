@@ -44,7 +44,9 @@ export class InformationBoardService {
         informationId: result.id,
       },
       user,
-      activityUsers.map((activityUser) => ({ id: activityUser.userId })),
+      activityUsers.map((activityUser) => ({
+        id: activityUser.userId,
+      })),
     );
 
     return result;

@@ -28,7 +28,7 @@ export class PostController {
     @Body() createPostCommentDto: CreatePostCommentDto,
   ) {
     console.log(createPostCommentDto);
-    return this.postService.createComment(user.id, createPostCommentDto);
+    return this.postService.createComment(user, createPostCommentDto);
   }
 
   @Post(':id')
@@ -41,7 +41,7 @@ export class PostController {
 
   @Post(':id/like')
   likePost(@User() user: RequestUser, @Param('id', ParseIntPipe) postId) {
-    return this.postService.likePost(user.id, postId);
+    return this.postService.likePost(user, postId);
   }
 
   @Get(':id/comments')

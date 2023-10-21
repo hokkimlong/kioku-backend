@@ -20,8 +20,6 @@ export class ActivityService {
   ) {
     const { startDate, endDate, image, name } = createActivityDto;
 
-    console.log('createActivityDto', createActivityDto);
-
     const result = await this.prisma.activity.create({
       data: {
         name,

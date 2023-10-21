@@ -10,6 +10,10 @@ export class UsersService {
     return this.prismaService.user.findFirst({ where: { email } });
   }
 
+  async findByUsername(username: string) {
+    return this.prismaService.user.findFirst({ where: { username } });
+  }
+
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
     return this.prismaService.user.create({ data });
   }
@@ -31,9 +35,14 @@ export class UsersService {
         id: true,
         email: true,
         username: true,
-        activities: true,
-        posts: true,
         createdAt: true,
+        _count: {
+          select: {
+            activities: true,
+            informations: true,
+            posts: true,
+          },
+        },
       },
     });
   }
