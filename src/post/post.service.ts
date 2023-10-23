@@ -140,7 +140,7 @@ export class PostService {
         },
       });
 
-      if (!Boolean(isLikeBefore)) {
+      if (!Boolean(isLikeBefore) && userPost.userId !== user.id) {
         await this.notificationService.createLikePostNotification(
           {
             activityId: userPost.activityId,
@@ -201,14 +201,16 @@ export class PostService {
         },
       });
 
-      await this.notificationService.createCommentPostNotification(
-        {
-          activityId: userPost.activityId,
-          postId: createPostCommentDto.postId,
-        },
-        { id: user.id, username: user.username },
-        [{ id: userPost.userId }],
-      );
+      if (userPost.userId !== user.id) {
+        await this.notificationService.createCommentPostNotification(
+          {
+            activityId: userPost.activityId,
+            postId: createPostCommentDto.postId,
+          },
+          { id: user.id, username: user.username },
+          [{ id: userPost.userId }],
+        );
+      }
     }
 
     return this.prisma.postComment.create({
