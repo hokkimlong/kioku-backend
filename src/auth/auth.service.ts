@@ -29,6 +29,20 @@ export class AuthService {
   ) {}
 
   async register(registerUserDto: RegisterUserDto) {
+    const foundUserEmail = await this.usersService.findByEmail(
+      registerUserDto.email,
+    );
+
+    if (foundUserEmail)
+      throw new NotFoundException({ message: 'email already exist' });
+
+    const foundUserUsername = await this.usersService.findByUsername(
+      registerUserDto.username,
+    );
+
+    if (foundUserUsername)
+      throw new NotFoundException({ message: 'username already exist' });
+
     registerUserDto.password = await hashPassword(registerUserDto.password);
     const newUser = await this.usersService.createUser(registerUserDto);
     delete newUser.password;
@@ -51,6 +65,7 @@ export class AuthService {
       const { id, username, email } = user;
       const payload = { id, username, email };
       return {
+        id,
         access_token: await this.jwtService.signAsync(payload),
       };
     }

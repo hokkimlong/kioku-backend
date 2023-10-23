@@ -5,6 +5,7 @@ import { PrismaService } from 'src/prisma.service';
 import { Role } from '@prisma/client';
 import { NotificationService } from 'src/notification/notification.service';
 import { RequestUser } from 'src/auth/utils/user-decorator';
+import { endOfDay, startOfDay } from 'date-fns';
 
 @Injectable()
 export class ActivityService {
@@ -55,7 +56,29 @@ export class ActivityService {
     return result;
   }
 
-  async getActivitiesByUserId(userId: number) {
+  async getActivitiesByUserId(userId: number, filter: { status: string }) {
+    const _filter = {};
+
+    if (filter.status === 'ongoing') {
+      const today = startOfDay(new Date());
+      _filter['OR'] = [
+        {
+          startDate: { lte: today },
+          endDate: { gte: today },
+        },
+      ];
+    } else if (filter.status === 'upcoming') {
+      const today = endOfDay(new Date());
+      _filter['startDate'] = {
+        gt: today,
+      };
+    } else if (filter.status === 'past') {
+      const today = endOfDay(new Date());
+      _filter['endDate'] = {
+        lt: today,
+      };
+    }
+
     const result = await this.prisma.activity.findMany({
       where: {
         users: {
@@ -63,6 +86,7 @@ export class ActivityService {
             userId: userId,
           },
         },
+        ..._filter,
       },
       include: {
         _count: {
@@ -86,7 +110,7 @@ export class ActivityService {
     }));
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, userId: number) {
     const result = await this.prisma.activity.findFirst({
       where: {
         id: id,
@@ -100,6 +124,7 @@ export class ActivityService {
                 username: true,
               },
             },
+            role: true,
           },
         },
       },
@@ -110,11 +135,15 @@ export class ActivityService {
       users: result.users.map((user: any) => {
         return user.user;
       }),
+      isAdmin: result.users.some(
+        (user: any) => user.user.id === userId && user.role === Role.ADMIN,
+      ),
     };
   }
 
   async update(id: number, createActivityDto: UpdateActivityDto) {
     const { startDate, endDate, image, name } = createActivityDto;
+
     // query for all current Member List without the admin role
     const currentActivityMembersList = await this.prisma.activity.findUnique({
       where: {

@@ -4,6 +4,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { CreatePostCommentDto } from './dto/create-post-comment.dto';
 import { NotificationService } from 'src/notification/notification.service';
 import { RequestUser } from 'src/auth/utils/user-decorator';
+import { differenceInMinutes } from 'date-fns';
 
 @Injectable()
 export class PostService {
@@ -99,17 +100,19 @@ export class PostService {
         postId: result.id,
       },
       user,
-      activityUsers.map(({ userId }) => ({ id: userId })),
+      activityUsers.map(({ userId }) => ({
+        id: userId,
+      })),
     );
 
     return result;
   }
 
-  async likePost(userId: number, postId: number) {
+  async likePost(user: RequestUser, postId: number) {
     const userLikePost = await this.prisma.postLike.findFirst({
       where: {
         postId,
-        userId,
+        userId: user.id,
       },
     });
 
@@ -118,10 +121,40 @@ export class PostService {
         where: { id: userLikePost.id },
       });
     } else {
+      const isLikeBefore = await this.prisma.notification.count({
+        where: {
+          feature: 'post',
+          action: 'like',
+          postId,
+          senderId: user.id,
+        },
+      });
+
+      const userPost = await this.prisma.post.findFirst({
+        where: {
+          id: postId,
+        },
+        select: {
+          userId: true,
+          activityId: true,
+        },
+      });
+
+      if (!Boolean(isLikeBefore)) {
+        await this.notificationService.createLikePostNotification(
+          {
+            activityId: userPost.activityId,
+            postId: postId,
+          },
+          { id: user.id, username: user.username },
+          [{ id: userPost.userId }],
+        );
+      }
+
       return this.prisma.postLike.create({
         data: {
           postId,
-          userId,
+          userId: user.id,
         },
       });
     }
@@ -137,13 +170,51 @@ export class PostService {
   }
 
   async createComment(
-    userId: number,
+    user: RequestUser,
     createPostCommentDto: CreatePostCommentDto,
   ) {
+    const comment = await this.prisma.postComment.findFirst({
+      where: {
+        userId: user.id,
+        postId: createPostCommentDto.postId,
+      },
+      include: {
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    if (!comment || differenceInMinutes(new Date(), comment?.createdAt) > 1) {
+      const userPost = await this.prisma.post.findFirst({
+        where: {
+          id: createPostCommentDto.postId,
+        },
+        select: {
+          userId: true,
+          activityId: true,
+        },
+      });
+
+      await this.notificationService.createCommentPostNotification(
+        {
+          activityId: userPost.activityId,
+          postId: createPostCommentDto.postId,
+        },
+        { id: user.id, username: user.username },
+        [{ id: userPost.userId }],
+      );
+    }
+
     return this.prisma.postComment.create({
       data: {
         ...createPostCommentDto,
-        userId,
+        userId: user.id,
       },
     });
   }

@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { RequestUser, User } from 'src/auth/utils/user-decorator';
 
@@ -15,5 +15,10 @@ export class UsersController {
   deleteUser(@User() user: RequestUser) {
     console.log('delete', user);
     return this.userService.deleteUser(user.id);
+  }
+
+  @Post('/')
+  updateUsers(@User() user: RequestUser, @Body() body: any) {
+    return this.userService.updateProfile(user.id, body);
   }
 }

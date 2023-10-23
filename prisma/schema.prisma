@@ -130,7 +130,10 @@ model Notification {
   post          Post?        @relation(fields: [postId], references: [id], onDelete: Cascade)
   informationId Int?
   information   Information? @relation(fields: [informationId], references: [id], onDelete: Cascade)
+  title         String
   message       String
+  action        String
+  feature       String
   senderId      Int
   sender        User         @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
   receiverId    Int

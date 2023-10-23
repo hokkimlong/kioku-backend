@@ -44,7 +44,9 @@ export class InformationBoardService {
         informationId: result.id,
       },
       user,
-      activityUsers.map((activityUser) => ({ id: activityUser.userId })),
+      activityUsers.map((activityUser) => ({
+        id: activityUser.userId,
+      })),
     );
 
     return result;
@@ -61,6 +63,12 @@ export class InformationBoardService {
             images: true,
           },
         },
+        user: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',
@@ -75,6 +83,11 @@ export class InformationBoardService {
       },
       include: {
         images: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
       },
     });
   }

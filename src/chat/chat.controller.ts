@@ -12,6 +12,6 @@ export class ChatController {
     @User() user: RequestUser,
     @Body() createMessageDto: CreateMessageDto,
   ) {
-    return this.chatService.sendMessageToChat(user.id, createMessageDto);
+    return this.chatService.sendMessageToChat(user, createMessageDto);
   }
 }

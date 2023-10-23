@@ -1,7 +1,7 @@
 import { IsArray, IsDateString, IsString, MinLength } from 'class-validator';
 
 export class CreateActivityDto {
-  @MinLength(3)
+  @MinLength(1)
   name: string;
 
   @IsDateString()
