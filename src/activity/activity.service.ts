@@ -100,7 +100,7 @@ export class ActivityService {
         },
       },
       orderBy: {
-        startDate: 'desc',
+        startDate: 'asc',
       },
     });
 
